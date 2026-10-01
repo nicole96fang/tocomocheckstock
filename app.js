@@ -135,6 +135,7 @@ function updateIssueAvailable() {
 
 function renderHistory(type) {
   const target = type === "in" ? $("receiveHistory") : $("issueHistory");
+
   const items = state.movements
     .filter(m => m.type === type)
     .sort((a, b) => new Date(b.time) - new Date(a.time))
@@ -149,10 +150,23 @@ function renderHistory(type) {
     <div class="history-item">
       <div class="history-main">
         <div class="history-name">${escapeHtml(m.productName)}</div>
-        <div class="history-meta">${displayDateTime(m.time)}${m.code ? ` · ${escapeHtml(m.code)}` : ""}</div>
+        <div class="history-meta">
+          ${displayDateTime(m.time)}${m.code ? ` · ${escapeHtml(m.code)}` : ""}
+        </div>
       </div>
-      <div class="history-qty ${m.type === "in" ? "plus" : "minus"}">
-        ${m.type === "in" ? "+" : "-"}${m.qty}
+
+      <div class="history-right">
+        <div class="history-qty ${m.type === "in" ? "plus" : "minus"}">
+          ${m.type === "in" ? "+" : "-"}${m.qty}
+        </div>
+
+        <button
+          type="button"
+          class="delete-btn"
+          data-delete-movement="${m.id}"
+        >
+          删除
+        </button>
       </div>
     </div>
   `).join("");
@@ -264,7 +278,35 @@ document.addEventListener("click", (e) => {
     navigate(screenBtn.dataset.screen);
     return;
   }
+const deleteButton = e.target.closest("[data-delete-movement]");
 
+if (deleteButton) {
+  const movementId = deleteButton.dataset.deleteMovement;
+  const movement = state.movements.find(m => m.id === movementId);
+
+  if (!movement) return;
+
+  const actionText =
+    movement.type === "in"
+      ? `进货 +${movement.qty}`
+      : `出货 -${movement.qty}`;
+
+  const confirmed = window.confirm(
+    `确定要删除这笔记录吗？\n\n${movement.productName}\n${actionText}\n\n删除后库存会自动恢复。`
+  );
+
+  if (!confirmed) return;
+
+  state.movements = state.movements.filter(
+    m => m.id !== movementId
+  );
+
+  saveState();
+
+  toast("已删除这笔记录，库存已自动更新");
+
+  return;
+}
   const countButton = e.target.closest("[data-count-action]");
   if (countButton) {
     const item = countButton.closest(".count-item");
