@@ -322,10 +322,33 @@ input:focus, select:focus {
   margin-top: 4px;
 }
 
+.history-right {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
 .history-qty {
   font-weight: 900;
   font-size: 16px;
   white-space: nowrap;
+}
+
+.delete-btn {
+  border: 0;
+  background: #fff0f0;
+  color: var(--red);
+  border-radius: 9px;
+  padding: 6px 9px;
+  font-size: 11px;
+  font-weight: 800;
+}
+
+.delete-btn:active {
+  transform: scale(.96);
 }
 
 .plus { color: var(--green); }
