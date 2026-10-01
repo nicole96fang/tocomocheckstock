@@ -1,0 +1,170 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="theme-color" content="#0f172a" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+  <title>TOCOMO CHECK STOCK</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="app-shell">
+    <header class="topbar">
+      <div>
+        <div class="brand">TOCOMO</div>
+        <div class="subtitle">CHECK STOCK</div>
+      </div>
+      <div class="today" id="today"></div>
+    </header>
+
+    <main>
+      <section id="homeScreen" class="screen active">
+        <div class="welcome-card">
+          <div class="welcome-icon">📱</div>
+          <div>
+            <h1>手机店点货工作台</h1>
+            <p>每天只需要：进货 · 出货 · 放工点货</p>
+          </div>
+        </div>
+
+        <div class="main-actions">
+          <button class="action-card receive" data-screen="receiveScreen">
+            <span class="action-icon">📦</span>
+            <span class="action-title">进货</span>
+            <span class="action-desc">新增库存</span>
+          </button>
+
+          <button class="action-card issue" data-screen="issueScreen">
+            <span class="action-icon">📤</span>
+            <span class="action-title">出货</span>
+            <span class="action-desc">减少库存</span>
+          </button>
+
+          <button class="action-card count" data-screen="countScreen">
+            <span class="action-icon">📋</span>
+            <span class="action-title">点货</span>
+            <span class="action-desc">放工前核对实际库存</span>
+          </button>
+        </div>
+
+        <div class="mini-status">
+          <div>
+            <span class="status-number" id="productCount">0</span>
+            <span class="status-label">个商品</span>
+          </div>
+          <div>
+            <span class="status-number" id="stockCount">0</span>
+            <span class="status-label">总库存</span>
+          </div>
+          <div>
+            <span class="status-number" id="differenceCount">0</span>
+            <span class="status-label">今日差异</span>
+          </div>
+        </div>
+      </section>
+
+      <section id="receiveScreen" class="screen">
+        <div class="screen-head">
+          <button class="back-btn" data-screen="homeScreen">‹</button>
+          <div>
+            <h2>📦 进货</h2>
+            <p>新货到店，增加库存</p>
+          </div>
+        </div>
+
+        <form id="receiveForm" class="form-card">
+          <label>商品名称</label>
+          <input id="receiveProduct" required placeholder="例如：iPhone 15 128GB Black" autocomplete="off" />
+
+          <label>IMEI / 编号 <span class="optional">(可不填)</span></label>
+          <input id="receiveCode" placeholder="如果要记录单台手机，可输入 IMEI" autocomplete="off" />
+
+          <label>数量</label>
+          <input id="receiveQty" type="number" min="1" step="1" value="1" required />
+
+          <button class="primary-btn receive-btn" type="submit">＋ 确认进货</button>
+        </form>
+
+        <div class="section-title">最近进货</div>
+        <div id="receiveHistory" class="history-list"></div>
+      </section>
+
+      <section id="issueScreen" class="screen">
+        <div class="screen-head">
+          <button class="back-btn" data-screen="homeScreen">‹</button>
+          <div>
+            <h2>📤 出货</h2>
+            <p>卖出 / 调出，自动减少库存</p>
+          </div>
+        </div>
+
+        <form id="issueForm" class="form-card">
+          <label>选择商品</label>
+          <select id="issueProduct" required></select>
+
+          <label>IMEI / 编号 <span class="optional">(可不填)</span></label>
+          <input id="issueCode" placeholder="如果有记录 IMEI，可输入" autocomplete="off" />
+
+          <div class="available-box">
+            <span>目前库存</span>
+            <strong id="issueAvailable">0</strong>
+          </div>
+
+          <label>数量</label>
+          <input id="issueQty" type="number" min="1" step="1" value="1" required />
+
+          <button class="primary-btn issue-btn" type="submit">✓ 确认出货</button>
+        </form>
+
+        <div class="section-title">最近出货</div>
+        <div id="issueHistory" class="history-list"></div>
+      </section>
+
+      <section id="countScreen" class="screen">
+        <div class="screen-head">
+          <button class="back-btn" data-screen="homeScreen">‹</button>
+          <div>
+            <h2>📋 今日点货</h2>
+            <p>放工前：系统库存 VS 实际库存</p>
+          </div>
+        </div>
+
+        <div class="count-summary">
+          <div><strong id="countDone">0</strong><span>已点</span></div>
+          <div><strong id="countTotal">0</strong><span>商品</span></div>
+          <div><strong id="countDiff">0</strong><span>有差异</span></div>
+        </div>
+
+        <input id="countSearch" class="search-input" placeholder="🔍 搜索商品" autocomplete="off" />
+
+        <div id="countList" class="count-list"></div>
+
+        <button id="finishCountBtn" class="primary-btn count-finish-btn">✓ 完成今日点货</button>
+
+        <div class="section-title">之前点货记录</div>
+        <div id="countHistory" class="history-list"></div>
+      </section>
+    </main>
+  </div>
+
+  <nav class="bottom-nav">
+    <button class="nav-btn active" data-screen="homeScreen">
+      <span>⌂</span><small>首页</small>
+    </button>
+    <button class="nav-btn" data-screen="receiveScreen">
+      <span>📦</span><small>进货</small>
+    </button>
+    <button class="nav-btn" data-screen="issueScreen">
+      <span>📤</span><small>出货</small>
+    </button>
+    <button class="nav-btn" data-screen="countScreen">
+      <span>📋</span><small>点货</small>
+    </button>
+  </nav>
+
+  <div id="toast" class="toast"></div>
+  <script src="app.js"></script>
+</body>
+</html>
